@@ -5,9 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Wizlearn Training Tracker</title>
 <style>
-:root{--bg:#f6f7f9;--card:#fff;--ink:#1c2530;--ink2:#52606f;--muted:#8693a1;--line:#e3e7ec;--accent:#2a6fdb;--bar:#2a6fdb;--bad:#b42318;--badbg:#fdecea;--warn:#8a5a00;--warnbg:#fff4d6;--ok:#17653a;--okbg:#e4f5ea;--s1:#2a78d6;--s2:#eb6834;--s3:#1baf7a;--s4:#eda100}
-@media(prefers-color-scheme:dark){:root{--bg:#12161b;--card:#1a2027;--ink:#e8edf2;--ink2:#a8b3bf;--muted:#78858f;--line:#2b343d;--accent:#6aa3f5;--bar:#6aa3f5;--bad:#ff9b8f;--badbg:#3a1f1c;--warn:#f0c15a;--warnbg:#3a2f14;--ok:#7fd49c;--okbg:#17301f;--s1:#3987e5;--s2:#d95926;--s3:#199e70;--s4:#c98500}}
+:root{--bg:#f6f7f9;--card:#fff;--ink:#1c2530;--ink2:#52606f;--muted:#8693a1;--line:#e3e7ec;--accent:#2a6fdb;--bad:#b42318;--badbg:#fdecea;--warn:#8a5a00;--warnbg:#fff4d6;--ok:#17653a;--okbg:#e4f5ea;--s1:#2a78d6;--s2:#eb6834;--s3:#1baf7a;--s4:#eda100}
+@media(prefers-color-scheme:dark){:root{--bg:#12161b;--card:#1a2027;--ink:#e8edf2;--ink2:#a8b3bf;--muted:#78858f;--line:#2b343d;--accent:#6aa3f5;--bad:#ff9b8f;--badbg:#3a1f1c;--warn:#f0c15a;--warnbg:#3a2f14;--ok:#7fd49c;--okbg:#17301f;--s1:#3987e5;--s2:#d95926;--s3:#199e70;--s4:#c98500}}
 *{box-sizing:border-box}
+[hidden]{display:none!important}
 body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
 .wrap{max-width:1180px;margin:0 auto;padding:24px 20px 48px}
 header{display:flex;flex-wrap:wrap;gap:16px;align-items:flex-end;justify-content:space-between;margin-bottom:20px}
@@ -24,6 +25,7 @@ select,input[type=date]{font:inherit;padding:7px 10px;border:1px solid var(--lin
 .card.btn{cursor:pointer;text-align:left;font:inherit;color:inherit;width:100%}
 .card.btn:hover,.card.btn:focus-visible{border-color:var(--accent);outline:none}
 .card.active{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent) inset}
+.card.alert .v{color:var(--bad)}
 h2{font-size:15px;margin:0 0 4px}
 .hint{font-size:12px;color:var(--muted);margin:0 0 12px}
 .chart{display:flex;flex-direction:column;gap:10px}
@@ -31,15 +33,15 @@ h2{font-size:15px;margin:0 0 4px}
 .brow:hover .bar,.brow.sel .bar{filter:brightness(.85)}
 .brow.sel .bl{font-weight:650}
 .bl{font-size:13px;color:var(--ink2)}
-.btrack{height:24px;background:transparent;position:relative}
+.btrack{height:24px;position:relative}
 .bar{height:100%;border-radius:0 4px 4px 0;min-width:2px;transition:width .3s}
 .bn{font-weight:650;text-align:right;font-variant-numeric:tabular-nums}
 .att{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
 .att li{border:1px solid var(--line);border-radius:10px;padding:11px 13px;display:grid;gap:4px}
 .att .top{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
 .att .t{font-weight:600}
-.att .m{color:var(--ink2);font-size:12.5px}
-.chip{display:inline-flex;align-items:center;gap:5px;font-size:12px;padding:2px 9px;border-radius:99px;font-weight:550}
+.att .m,.m{color:var(--ink2);font-size:12.5px}
+.chip{display:inline-flex;align-items:center;gap:5px;font-size:12px;padding:2px 9px;border-radius:99px;font-weight:550;white-space:nowrap}
 .chip.bad{background:var(--badbg);color:var(--bad)}
 .chip.warn{background:var(--warnbg);color:var(--warn)}
 .chip.ok{background:var(--okbg);color:var(--ok)}
@@ -48,11 +50,53 @@ h2{font-size:15px;margin:0 0 4px}
 .tablewrap{overflow-x:auto}
 table{border-collapse:collapse;width:100%;font-size:13px}
 th,td{text-align:left;padding:8px 6px;border-bottom:1px solid var(--line);vertical-align:top}
-th{letter-spacing:.02em;font-size:11px}
+th{font-size:11px;color:var(--ink2);text-transform:uppercase;letter-spacing:.02em;font-weight:600}
 td.n,td.nw{white-space:nowrap}
-th{font-size:11.5px;color:var(--ink2);text-transform:uppercase;letter-spacing:.04em;font-weight:600}
 td.n,th.n{text-align:right;font-variant-numeric:tabular-nums}
 tr.hl td{background:color-mix(in srgb,var(--warnbg) 55%,transparent)}
+.dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;vertical-align:baseline}
+.sect{margin-bottom:18px}
+.foot{color:var(--muted);font-size:12px;margin-top:16px}
+.btn{font:inherit;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:8px;padding:7px 12px;cursor:pointer}
+.btn:hover,.btn:focus-visible{border-color:var(--accent);outline:none}
+.btn:disabled{opacity:.55;cursor:default}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--bg);font-weight:600}
+.btn.danger{color:var(--bad);border-color:var(--bad)}
+.btn.sm{padding:3px 9px;font-size:12px;margin-top:4px}
+.acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+.tcell{display:inline-flex;flex-direction:column;align-items:flex-start;gap:2px}
+.tcell .m{font-size:12px}
+.tbtns{display:flex;gap:6px;flex-wrap:wrap}
+.who{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.who .name{font-size:13px;color:var(--ink2)}
+.banner{background:var(--badbg);color:var(--bad);border:1px solid var(--bad);border-radius:10px;padding:10px 14px;margin-bottom:16px;display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+
+/* login */
+.login{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+.lbox{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:26px 24px;width:100%;max-width:380px}
+.lbox h1{font-size:21px;margin-bottom:4px}
+.lbox .btn.primary{width:100%;min-height:46px;margin-top:18px}
+
+/* modals */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;padding:16px;z-index:20}
+.mbox{background:var(--card);color:var(--ink);border-radius:14px;max-width:440px;width:100%;padding:20px;max-height:92vh;overflow:auto;border:1px solid var(--line)}
+.mbox.wide{max-width:620px}
+.mbox h2{font-size:18px;margin:0}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:0 14px}
+.field{display:flex;flex-direction:column;gap:4px;margin-top:14px}
+.field label{display:block}
+.field input,.field select,.field textarea{font:inherit;padding:9px 10px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink);width:100%;min-height:44px}
+.field input:disabled,.field select:disabled{opacity:.55}
+.field.bad input,.field.bad select{border-color:var(--bad)}
+.err{color:var(--bad);font-size:12.5px}
+.note{font-size:12.5px;margin-top:12px;background:var(--warnbg);color:var(--warn);padding:8px 10px;border-radius:8px}
+.formerr{font-size:13px;margin-top:12px;background:var(--badbg);color:var(--bad);padding:8px 10px;border-radius:8px}
+.sec{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-top:20px;border-top:1px solid var(--line);padding-top:12px}
+.mact{display:flex;gap:10px;justify-content:flex-end;margin-top:18px;flex-wrap:wrap}
+.mact .btn{min-height:44px;padding:8px 18px}
+.mact .left{margin-right:auto}
+#ctext{width:100%;min-height:150px;font:inherit;padding:10px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink);margin-top:12px;resize:vertical}
+#tip{position:fixed;pointer-events:none;background:var(--ink);color:var(--bg);padding:6px 9px;border-radius:6px;font-size:12px;opacity:0;transition:opacity .1s;z-index:30;max-width:260px}
 
 @media(max-width:1100px){
   .tablewrap{overflow:visible}
@@ -67,7 +111,6 @@ tr.hl td{background:color-mix(in srgb,var(--warnbg) 55%,transparent)}
   .tbtns{justify-content:flex-end}
   td{white-space:normal;border:0;padding:4px 0;display:flex;justify-content:space-between;gap:12px;text-align:right}
   td::before{content:attr(data-label);color:var(--muted);font-size:12px;text-align:left;flex:0 0 40%}
-  td.n,td{text-align:right}
   td.empty{display:block;text-align:left}
   td.empty::before{content:none}
 }
@@ -79,60 +122,53 @@ tr.hl td{background:color-mix(in srgb,var(--warnbg) 55%,transparent)}
   .controls label{flex:1 1 140px}
   select,input[type=date]{min-width:0;width:100%;min-height:44px;font-size:16px}
   .cards{grid-template-columns:1fr 1fr;gap:10px}
+  .cards .card:last-child:nth-child(odd){grid-column:1/-1}
   .card{padding:13px 14px}
   .card .v{font-size:28px}
   .card .k{font-size:11px}
   .brow{grid-template-columns:96px 1fr 24px;min-height:44px}
   .att .top{flex-direction:column;gap:2px}
   .chip{font-size:12.5px}
-  .cards .card:last-child:nth-child(odd){grid-column:1/-1}
   .btn.sm{min-height:40px;padding:6px 14px}
+  .grid2{grid-template-columns:1fr}
+  .field input,.field select,.lbox input{font-size:16px}
 }
-
-.btn{font:inherit;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:8px;padding:7px 12px;cursor:pointer}
-.btn:hover,.btn:focus-visible{border-color:var(--accent);outline:none}
-.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--bg);font-weight:600}
-.btn.sm{padding:3px 9px;font-size:12px;margin-top:4px}
-.chip.info{background:var(--line);color:var(--ink2)}
-.overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;padding:16px;z-index:20}
-.overlay[hidden]{display:none}
-.mbox{background:var(--card);color:var(--ink);border-radius:14px;max-width:440px;width:100%;padding:20px;max-height:92vh;overflow:auto;border:1px solid var(--line)}
-.mbox h2{font-size:18px;margin:0}
-.field{display:flex;flex-direction:column;gap:4px;margin-top:14px}
-.field label{display:block;flex-direction:initial}
-.field input,.field select{font:inherit;padding:9px 10px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink);width:100%;min-height:44px}
-.field input:disabled{opacity:.5}
-.field.bad input,.field.bad select{border-color:var(--bad)}
-.err{color:var(--bad);font-size:12.5px}
-.note{font-size:12.5px;color:var(--ink2);margin-top:12px;background:var(--badbg);background:var(--warnbg);color:var(--warn);padding:8px 10px;border-radius:8px}
-.mact{display:flex;gap:10px;justify-content:flex-end;margin-top:18px}
-.mact .btn{min-height:44px;padding:8px 18px}
-.chip.bad,.chip.warn,.chip.ok{white-space:nowrap}
-.acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
-.tcell{display:inline-flex;flex-direction:column;align-items:flex-start;gap:2px}
-.tcell .m{font-size:12px;color:var(--ink2)}
-.tbtns{display:flex;gap:6px;flex-wrap:wrap}
-.card.alert .v{color:var(--bad)}
-#ctext{width:100%;min-height:150px;font:inherit;padding:10px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink);margin-top:12px;resize:vertical}
-#tip{position:fixed;pointer-events:none;background:var(--ink);color:var(--bg);padding:6px 9px;border-radius:6px;font-size:12px;opacity:0;transition:opacity .1s;z-index:9;max-width:260px}
-.dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;vertical-align:baseline}
-.sect{margin-bottom:18px}
-.foot{color:var(--muted);font-size:12px;margin-top:16px}
 </style>
 </head>
 <body>
-<div class="wrap">
+
+<!-- ============ LOGIN ============ -->
+<main class="login" id="login" hidden>
+  <form class="lbox" id="lform" novalidate>
+    <h1>Client training tracker</h1>
+    <div class="sub">Sign in with your Wizlearn account.</div>
+    <div class="field"><label for="l-email">Email</label><input id="l-email" type="email" autocomplete="username" inputmode="email" required></div>
+    <div class="field"><label for="l-pass">Password</label><input id="l-pass" type="password" autocomplete="current-password" required></div>
+    <div class="formerr" id="lerr" role="alert" hidden></div>
+    <button class="btn primary" id="lgo" type="submit">Sign in</button>
+  </form>
+</main>
+
+<!-- ============ DASHBOARD ============ -->
+<div class="wrap" id="app" hidden>
 <header>
   <div>
     <h1>Client training tracker</h1>
     <div class="sub" id="sub"></div>
   </div>
   <div class="controls">
-    <label>Coordinator<select id="coord"></select></label>
+    <label id="coordwrap">Coordinator<select id="coord"></select></label>
     <label>As at date<input type="date" id="asat"></label>
-    <button class="btn" id="reset" type="button" hidden>Reset edits</button>
+    <div class="who">
+      <span class="name" id="who"></span>
+      <button class="btn" id="addrun" type="button" hidden>Add run</button>
+      <button class="btn" id="refresh" type="button">Refresh</button>
+      <button class="btn" id="signout" type="button">Sign out</button>
+    </div>
   </div>
 </header>
+
+<div class="banner" id="banner" role="alert" hidden><span id="banner-msg"></span><button class="btn" id="banner-retry" type="button">Retry</button></div>
 
 <section class="card sect" aria-label="Needs attention">
   <h2>Needs attention <span id="attn-count" class="sub"></span></h2>
@@ -153,24 +189,67 @@ tr.hl td{background:color-mix(in srgb,var(--warnbg) 55%,transparent)}
   <p class="hint">Sorted by attendance rate, lowest first (attended ÷ enrolled; runs not yet started are listed last). Highlighted rows need attention. Click a card or stage to narrow the list.</p>
   <div class="tablewrap"><table id="tbl"></table></div>
 </section>
-<p class="foot">Source: Client_training_tracker.xlsx (15 runs, fictional sample data, sheet dated 23 Nov 2026). Edits are kept in this browser only and do not change the spreadsheet. “Next 14 days” counts the as-at date through 14 days after it, inclusive.</p>
+<p class="foot" id="foot">“Next 14 days” counts the as-at date through 14 days after it, inclusive. Completed runs are not counted as upcoming sessions.</p>
 </div>
+
+<!-- ============ EDIT / ADD RUN ============ -->
 <div class="overlay" id="modal" hidden>
   <form class="mbox" id="mform" role="dialog" aria-modal="true" aria-labelledby="m-title" novalidate>
     <h2 id="m-title">Edit run</h2>
     <div class="sub" id="m-sub"></div>
-    <div class="field" id="g-stage"><label for="f-stage">Stage</label>
-      <select id="f-stage"><option>Planning</option><option>Enrolment open</option><option>Running</option><option>Completed</option></select></div>
-    <div class="field" id="g-enrolled"><label for="f-enrolled">Enrolled</label>
-      <input id="f-enrolled" type="number" inputmode="numeric" min="0" step="1"><span class="err" id="e-enrolled"></span></div>
-    <div class="field" id="g-attended"><label for="f-attended">Attended <span id="req" class="sub"></span></label>
-      <input id="f-attended" type="number" inputmode="numeric" min="0" step="1" placeholder="Leave blank if not started"><span class="err" id="e-attended"></span></div>
-    <div class="field" id="g-certs"><label for="f-certs">Certificates pending <span class="sub">(completed runs only)</span></label>
-      <input id="f-certs" type="number" inputmode="numeric" min="0" step="1"><span class="err" id="e-certs"></span></div>
+
+    <div class="mgr-only" id="mgr-top">
+      <div class="field" id="g-id"><label for="f-id">Run ID</label><input id="f-id" type="text" maxlength="40" autocomplete="off"><span class="err" id="e-id"></span></div>
+      <div class="grid2">
+        <div class="field" id="g-client"><label for="f-client">Client</label><input id="f-client" type="text" maxlength="200"><span class="err" id="e-client"></span></div>
+        <div class="field" id="g-type"><label for="f-type">Client type</label><input id="f-type" type="text" maxlength="100"><span class="err" id="e-type"></span></div>
+      </div>
+      <div class="field" id="g-course"><label for="f-course">Course</label><input id="f-course" type="text" maxlength="200"><span class="err" id="e-course"></span></div>
+      <div class="grid2">
+        <div class="field" id="g-coord"><label for="f-coord">Coordinator</label><select id="f-coord"></select><span class="err" id="e-coord"></span></div>
+        <div class="field" id="g-min"><label for="f-min">Minimum class size</label><input id="f-min" type="number" inputmode="numeric" min="0" step="1"><span class="err" id="e-min"></span></div>
+      </div>
+      <div class="sec">Progress</div>
+    </div>
+
+    <div class="grid2">
+      <div class="field" id="g-stage"><label for="f-stage">Stage</label>
+        <select id="f-stage"><option>Planning</option><option>Enrolment open</option><option>Running</option><option>Completed</option></select></div>
+      <div class="field" id="g-enrolled"><label for="f-enrolled">Enrolled</label>
+        <input id="f-enrolled" type="number" inputmode="numeric" min="0" step="1"><span class="err" id="e-enrolled"></span></div>
+    </div>
+    <div class="grid2">
+      <div class="field" id="g-attended"><label for="f-attended">Attended <span id="req" class="sub"></span></label>
+        <input id="f-attended" type="number" inputmode="numeric" min="0" step="1" placeholder="Blank if not started"><span class="err" id="e-attended"></span></div>
+      <div class="field" id="g-certs"><label for="f-certs">Certificates pending <span class="sub">(completed only)</span></label>
+        <input id="f-certs" type="number" inputmode="numeric" min="0" step="1"><span class="err" id="e-certs"></span></div>
+    </div>
+    <div class="field" id="g-note"><label for="f-note">Note <span class="sub">(one line)</span></label>
+      <input id="f-note" type="text" maxlength="200" autocomplete="off"><span class="err" id="e-note"></span></div>
+
+    <div class="mgr-only" id="mgr-bottom">
+      <div class="sec">Schedule and trainer</div>
+      <div class="grid2">
+        <div class="field" id="g-next"><label for="f-next">Next session date</label><input id="f-next" type="date"><span class="err" id="e-next"></span></div>
+        <div class="field" id="g-confirm"><label for="f-confirm">Trainer confirm by</label><input id="f-confirm" type="date"><span class="err" id="e-confirm"></span></div>
+      </div>
+      <div class="grid2">
+        <div class="field" id="g-trainer"><label for="f-trainer">Trainer</label><input id="f-trainer" type="text" maxlength="200"><span class="err" id="e-trainer"></span></div>
+        <div class="field" id="g-tstatus"><label for="f-tstatus">Trainer status</label><select id="f-tstatus"><option>Pending</option><option>Confirmed</option></select></div>
+      </div>
+    </div>
+
     <div class="note" id="m-note" hidden></div>
-    <div class="mact"><button type="button" class="btn" id="m-cancel">Cancel</button><button type="submit" class="btn primary">Save</button></div>
+    <div class="formerr" id="m-err" role="alert" hidden></div>
+    <div class="sub" id="m-meta" style="margin-top:12px"></div>
+    <div class="mact">
+      <button type="button" class="btn danger left" id="m-delete" hidden>Delete run</button>
+      <button type="button" class="btn" id="m-cancel">Cancel</button>
+      <button type="submit" class="btn primary" id="m-save">Save</button>
+    </div>
   </form>
 </div>
+
 <div class="overlay" id="cmodal" hidden>
   <div class="mbox" role="dialog" aria-modal="true" aria-labelledby="c-title">
     <h2 id="c-title">Copy reminder</h2>
@@ -180,8 +259,14 @@ tr.hl td{background:color-mix(in srgb,var(--warnbg) 55%,transparent)}
   </div>
 </div>
 <div id="tip"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.119.2/dist/umd/supabase.js" integrity="sha384-A97u3Qnt9GZHURO9YJZRe7VQgGUeFzcv6I1oIGnUTxQrCxnpQMwR0/G8F2zt9abZ" crossorigin="anonymous"></script>
 <script>
-const RUNS=[{"id": "WZ-R01", "client": "Meadowbrook Community Hospital", "type": "Community hospital", "course": "Infection Control Refresher 2026", "coord": "Nurul Huda", "stage": "Running", "min": 10, "enrolled": 18, "attended": 17, "certs": null, "next": "2026-11-26", "trainer": "Dr Grace Leong", "tstatus": "Confirmed", "confirm": "2026-11-10"}, {"id": "WZ-R02", "client": "Lumen Medical Association", "type": "Medical association", "course": "CME: Clinical Documentation Update", "coord": "Marcus Tan", "stage": "Completed", "min": 15, "enrolled": 24, "attended": 22, "certs": 6, "next": null, "trainer": "Kenneth Soh", "tstatus": "Confirmed", "confirm": "2026-10-20"}, {"id": "WZ-R03", "client": "Eastvale Nursing Home", "type": "Nursing home", "course": "Fall Prevention Basics", "coord": "Wei Ling Ong", "stage": "Enrolment open", "min": 12, "enrolled": 7, "attended": null, "certs": null, "next": "2026-12-03", "trainer": "Farida Yusof", "tstatus": "Pending", "confirm": "2026-11-26"}, {"id": "WZ-R04", "client": "Harbourview Community Hospital", "type": "Community hospital", "course": "Digital Records Basics for Community Care Staff", "coord": "Arjun Nair", "stage": "Enrolment open", "min": 10, "enrolled": 14, "attended": null, "certs": null, "next": "2026-12-15", "trainer": "Benjamin Teo", "tstatus": "Pending", "confirm": "2026-12-04"}, {"id": "WZ-R05", "client": "Silverleaf Nursing Home", "type": "Nursing home", "course": "Dementia Care Essentials", "coord": "Nurul Huda", "stage": "Enrolment open", "min": 12, "enrolled": 9, "attended": null, "certs": null, "next": "2026-12-07", "trainer": "Selvi Krishnan", "tstatus": "Confirmed", "confirm": "2026-11-20"}, {"id": "WZ-R06", "client": "Northgate Healthcare Training Institute", "type": "Healthcare training institute", "course": "Train the Trainer: LMS Course Builder", "coord": "Marcus Tan", "stage": "Planning", "min": 8, "enrolled": 0, "attended": null, "certs": null, "next": "2027-01-12", "trainer": "Rachel Lau", "tstatus": "Pending", "confirm": "2026-12-18"}, {"id": "WZ-R07", "client": "Pinewood Home Care", "type": "Healthcare agency", "course": "Medication Safety Refresher", "coord": "Wei Ling Ong", "stage": "Running", "min": 10, "enrolled": 12, "attended": 11, "certs": null, "next": "2026-12-01", "trainer": "Dr Grace Leong", "tstatus": "Confirmed", "confirm": "2026-11-06"}, {"id": "WZ-R08", "client": "Lumen Medical Association", "type": "Medical association", "course": "CME: Ethics in Practice", "coord": "Arjun Nair", "stage": "Completed", "min": 15, "enrolled": 30, "attended": 28, "certs": 0, "next": null, "trainer": "Kenneth Soh", "tstatus": "Confirmed", "confirm": "2026-10-02"}, {"id": "WZ-R09", "client": "Meadowbrook Community Hospital", "type": "Community hospital", "course": "Fire Safety 2026", "coord": "Marcus Tan", "stage": "Completed", "min": 10, "enrolled": 20, "attended": 19, "certs": 4, "next": null, "trainer": "Benjamin Teo", "tstatus": "Confirmed", "confirm": "2026-10-16"}, {"id": "WZ-R10", "client": "Eastvale Nursing Home", "type": "Nursing home", "course": "Infection Control Refresher 2026", "coord": "Nurul Huda", "stage": "Enrolment open", "min": 12, "enrolled": 13, "attended": null, "certs": null, "next": "2026-12-10", "trainer": "Farida Yusof", "tstatus": "Pending", "confirm": "2026-11-23"}, {"id": "WZ-R11", "client": "Harbourview Community Hospital", "type": "Community hospital", "course": "Person-Centred Care", "coord": "Wei Ling Ong", "stage": "Running", "min": 12, "enrolled": 15, "attended": 14, "certs": null, "next": "2026-11-25", "trainer": "Selvi Krishnan", "tstatus": "Confirmed", "confirm": "2026-11-04"}, {"id": "WZ-R12", "client": "Silverleaf Nursing Home", "type": "Nursing home", "course": "Digital Records Basics for Community Care Staff", "coord": "Arjun Nair", "stage": "Planning", "min": 10, "enrolled": 4, "attended": null, "certs": null, "next": "2027-01-19", "trainer": "Benjamin Teo", "tstatus": "Pending", "confirm": "2027-01-05"}, {"id": "WZ-R13", "client": "Riverside Community Care Agency", "type": "Healthcare agency", "course": "Basic Caregiving Skills", "coord": "Marcus Tan", "stage": "Enrolment open", "min": 15, "enrolled": 11, "attended": null, "certs": null, "next": "2026-12-08", "trainer": "Rachel Lau", "tstatus": "Pending", "confirm": "2026-11-27"}, {"id": "WZ-R14", "client": "Northgate Healthcare Training Institute", "type": "Healthcare training institute", "course": "LMS Admin Basics", "coord": "Nurul Huda", "stage": "Completed", "min": 8, "enrolled": 10, "attended": 10, "certs": 0, "next": null, "trainer": "Rachel Lau", "tstatus": "Confirmed", "confirm": "2026-09-25"}, {"id": "WZ-R15", "client": "Pinewood Home Care", "type": "Healthcare agency", "course": "Fall Prevention Basics", "coord": "Arjun Nair", "stage": "Completed", "min": 10, "enrolled": 11, "attended": 9, "certs": 2, "next": null, "trainer": "Farida Yusof", "tstatus": "Confirmed", "confirm": "2026-10-09"}];
+/* ---------- Configuration: the only two values this file needs ---------- */
+const SUPABASE_URL = 'https://geaarzcppefjhqkpbqtd.supabase.co';
+const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_emqduMhvV73uXfQMf_B82g_7YNTwmJR';
+/* Never put the service role key in this file. */
+
 const STAGES=['Planning','Enrolment open','Running','Completed'];
 const $=s=>document.querySelector(s);
 const DAY=864e5;
@@ -189,25 +274,26 @@ const SC={'Planning':'var(--s1)','Enrolment open':'var(--s2)','Running':'var(--s
 const dot=s=>`<span class="dot" style="background:${SC[s]}"></span>`;
 const parse=s=>{if(!s)return null;const[y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d)};
 const fmt=s=>s?parse(s).toLocaleDateString('en-GB',{day:'numeric',month:'short'}):'–';
+const fmtLong=s=>parse(s).toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short',year:'numeric'});
+const fmtTs=s=>new Date(s).toLocaleString('en-GB',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});
 const iso=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
-const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const rel=d=>d===null?'':d<0?`${-d} day${d===-1?'':'s'} overdue`:d===0?'today':d===1?'tomorrow':`in ${d} days`;
 
-let EDITS={};
-try{EDITS=JSON.parse(localStorage.getItem('wz-edits')||'{}')||{}}catch(e){EDITS={}}
-const persist=()=>{try{localStorage.setItem('wz-edits',JSON.stringify(EDITS))}catch(e){}};
-let TCONF={};
-try{TCONF=JSON.parse(localStorage.getItem('wz-trainer')||'{}')||{}}catch(e){TCONF={}}
-const persistT=()=>{try{localStorage.setItem('wz-trainer',JSON.stringify(TCONF))}catch(e){}};
-// effective run = spreadsheet row + saved edits; completed runs have no next session, certificates only on completed runs
-function eff(r0){const r=TCONF[r0.id]?{...r0,tstatus:'Confirmed'}:r0;const e=EDITS[r.id];if(!e)return r;const done=e.stage==='Completed';
-  return {...r,stage:e.stage,enrolled:e.enrolled,attended:e.attended,certs:done?(e.certs??0):null,next:done?null:r.next}}
+let sb=null;             // Supabase client
+let ME=null;             // signed-in user's profile row (role comes from the database, not user metadata)
+let RUNS=[];             // runs this user is allowed to see
+let COORDS=[];           // manager only: coordinator profiles
+let NOT_REPORTED=[];     // manager only: coordinators with no update in the last 7 days
 let state={coord:'All',stage:null,card:null,asat:iso(new Date())};
+const isMgr=()=>!!ME&&ME.role==='manager';
 
-const coords=['All',...[...new Set(RUNS.map(r=>r.coord))].sort()];
-$('#coord').innerHTML=coords.map(c=>`<option value="${esc(c)}">${c==='All'?'All coordinators':esc(c)}</option>`).join('');
-$('#asat').value=state.asat;
-$('#coord').onchange=e=>{state.coord=e.target.value;render()};
-$('#asat').onchange=e=>{if(e.target.value){state.asat=e.target.value;render()}};
+/* ---------- Mapping database rows to the dashboard's run objects ---------- */
+const fromDb=r=>({id:r.id,client:r.client,type:r.client_type,course:r.course,coord:r.coordinator_name,stage:r.stage,
+  min:r.min_class_size,enrolled:r.enrolled,attended:r.attended,certs:r.certificates_pending,next:r.next_session_date,
+  trainer:r.trainer,tstatus:r.trainer_status,confirm:r.confirm_by,note:r.note,updatedAt:r.updated_at});
+// Completed runs have no upcoming session, and certificates only count on completed runs.
+const eff=r=>({...r,next:r.stage==='Completed'?null:r.next,certs:r.stage==='Completed'?r.certs:null});
 
 function enrich(r){
   const today=parse(state.asat);
@@ -223,51 +309,136 @@ function enrich(r){
   return {...r,days,soon,below,rate,cdays,tstate,chase,certsPending:certs,attn,inProg:r.stage!=='Completed'};
 }
 
-const fmtLong=s=>parse(s).toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short',year:'numeric'});
-const rel=d=>d===null?'':d<0?`${-d} day${d===-1?'':'s'} overdue`:d===0?'today':d===1?'tomorrow':`in ${d} days`;
+/* ---------- Screens ---------- */
+function showLogin(msg){
+  ME=null;RUNS=[];COORDS=[];NOT_REPORTED=[];
+  $('#app').hidden=true;$('#modal').hidden=true;$('#cmodal').hidden=true;
+  $('#attn').innerHTML='';$('#tbl').innerHTML='';$('#cards').innerHTML='';$('#chart').innerHTML='';
+  $('#login').hidden=false;
+  $('#l-pass').value='';
+  setLoginError(msg||'');
+  $('#lgo').disabled=false;$('#lgo').textContent='Sign in';
+  (($('#l-email').value)?$('#l-pass'):$('#l-email')).focus();
+}
+function setLoginError(m){const e=$('#lerr');e.textContent=m;e.hidden=!m}
+function showBanner(m){$('#banner-msg').textContent=m;$('#banner').hidden=!m}
+
+async function boot(){
+  if(!window.supabase){showLogin();setLoginError('Could not load the Supabase library. Check your internet connection and reload.');$('#lgo').disabled=true;return}
+  sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
+  sb.auth.onAuthStateChange(ev=>{if(ev==='SIGNED_OUT')setTimeout(()=>{if(!$('#app').hidden)showLogin()},0)});
+  const {data}=await sb.auth.getSession();
+  if(data&&data.session)await enter();else showLogin();
+}
+
+async function enter(){
+  const {data:ud,error:ue}=await sb.auth.getUser();
+  if(ue||!ud||!ud.user){await sb.auth.signOut({scope:'local'});showLogin('Your session has expired. Please sign in again.');return}
+  const {data:prof,error:pe}=await sb.from('profiles').select('id,email,full_name,role,coordinator_name').eq('id',ud.user.id).maybeSingle();
+  if(pe||!prof){await sb.auth.signOut({scope:'local'});showLogin(pe?'Could not load your account: '+pe.message:'Your account has no role assigned. Please contact the manager.');return}
+  ME=prof;
+  state={coord:'All',stage:null,card:null,asat:iso(new Date())};
+  $('#asat').value=state.asat;
+  $('#who').textContent=`${ME.full_name} · ${ME.role}`;
+  $('#coordwrap').hidden=!isMgr();
+  $('#addrun').hidden=!isMgr();
+  $('#login').hidden=true;$('#app').hidden=false;
+  $('#sub').textContent='Loading runs…';
+  await loadData();
+}
+
+function sessionProblem(err){
+  return err&&(err.status===401||/jwt|token.*expired|not authenticated/i.test(err.message||''));
+}
+
+async function loadData(){
+  showBanner('');
+  const since=new Date(Date.now()-7*DAY).toISOString();
+  const rq=await sb.from('runs').select('*').order('id');
+  if(rq.error){
+    if(sessionProblem(rq.error)){await sb.auth.signOut({scope:'local'});showLogin('Your session has expired. Please sign in again.');return}
+    RUNS=[];render();showBanner('Could not load runs: '+rq.error.message);return;
+  }
+  RUNS=rq.data.map(fromDb);
+  if(isMgr()){
+    const pq=await sb.from('profiles').select('id,full_name,role,coordinator_name').eq('role','coordinator').order('full_name');
+    if(pq.error){COORDS=[];NOT_REPORTED=[];showBanner('Could not load coordinators: '+pq.error.message)}
+    else{
+      COORDS=pq.data;
+      // "Not reported this week": coordinators with no logged update in the last 7 days
+      const counts=await Promise.all(COORDS.map(c=>sb.from('run_audit').select('id',{count:'exact',head:true}).eq('action','update').eq('changed_by',c.id).gte('changed_at',since)));
+      if(counts.some(c=>c.error)){NOT_REPORTED=[];showBanner('Could not check recent updates: '+(counts.find(c=>c.error).error.message))}
+      else NOT_REPORTED=COORDS.filter((c,i)=>!counts[i].count);
+    }
+  }
+  fillCoordFilter();
+  render();
+}
+
+function fillCoordFilter(){
+  if(!isMgr())return;
+  const names=[...new Set([...COORDS.map(c=>c.coordinator_name),...RUNS.map(r=>r.coord).filter(Boolean)])].sort();
+  const opts=['All',...names,...(RUNS.some(r=>!r.coord)?['__none']:[])];
+  if(!opts.includes(state.coord))state.coord='All';
+  $('#coord').innerHTML=opts.map(c=>`<option value="${esc(c)}">${c==='All'?'All coordinators':c==='__none'?'Unassigned':esc(c)}</option>`).join('');
+  $('#coord').value=state.coord;
+}
+
+/* ---------- Trainer helpers ---------- */
 function reminderText(r){
   const sess=r.next?`Session date: ${fmtLong(r.next)}`:'Session date: to be confirmed';
   const by=r.cdays<0?`Please confirm as soon as you can. The confirm-by date was ${fmtLong(r.confirm)}.`:`Please confirm by ${fmtLong(r.confirm)}.`;
-  return `Hi ${r.trainer},\n\nA quick reminder to confirm that you can deliver "${r.course}" for ${r.client}.\n${sess}\n${by}\n\nThank you,\n${r.coord}, Wizlearn`;
+  return `Hi ${r.trainer||'there'},\n\nA quick reminder to confirm that you can deliver "${r.course}" for ${r.client}.\n${sess}\n${by}\n\nThank you,\n${r.coord?r.coord+', ':''}Wizlearn`;
 }
 const trainerBtns=r=>{
-  if(r.tstate==='ok')return TCONF[r.id]?`<button type="button" class="btn sm" data-undo="${esc(r.id)}">Undo confirmed</button>`:'';
-  return (r.chase?`<button type="button" class="btn sm" data-copy="${esc(r.id)}">Copy reminder</button>`:'')+`<button type="button" class="btn sm" data-confirm="${esc(r.id)}">Mark confirmed</button>`;
+  if(r.tstate==='ok')return '';
+  return (r.chase?`<button type="button" class="btn sm" data-copy="${esc(r.id)}">Copy reminder</button>`:'')+
+         (isMgr()?`<button type="button" class="btn sm" data-confirm="${esc(r.id)}">Mark confirmed</button>`:'');
 };
 const trainerChip=r=>r.tstate==='ok'?'<span class="chip ok">✓ Confirmed</span>':r.tstate==='chase'?'<span class="chip bad">▲ Send reminder</span>':'<span class="chip warn">◷ Pending</span>';
+
+/* ---------- Render ---------- */
 function render(){
-  const all=RUNS.map(r=>enrich(eff(r))).filter(r=>state.coord==='All'||r.coord===state.coord);
+  if(!ME)return;
+  const scoped=RUNS.map(r=>enrich(eff(r)));
+  const all=scoped.filter(r=>state.coord==='All'||(state.coord==='__none'?!r.coord:r.coord===state.coord));
   const inProg=all.filter(r=>r.inProg),below=all.filter(r=>r.below),soon=all.filter(r=>r.soon),cp=all.filter(r=>r.certsPending),attn=all.filter(r=>r.attn),chase=all.filter(r=>r.chase);
   const certTotal=all.reduce((a,r)=>a+(r.certs||0),0);
-  const nEdits=Object.keys(EDITS).length+Object.keys(TCONF).length;$('#reset').hidden=!nEdits;$('#reset').textContent=`Reset ${nEdits} edit${nEdits===1?'':'s'}`;
-  $('#sub').textContent=`${all.length} runs${state.coord==='All'?' across all coordinators':' for '+state.coord} · as at ${parse(state.asat).toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short',year:'numeric'})}`;
+  const scope=isMgr()?(state.coord==='All'?' across all coordinators':state.coord==='__none'?' unassigned':' for '+state.coord):' assigned to you';
+  $('#sub').textContent=`${all.length} run${all.length===1?'':'s'}${scope} · as at ${fmtLong(state.asat)}`;
 
   const cards=[
     {id:'inprog',k:'Runs in progress',v:inProg.length,d:'Every run not yet completed',f:r=>r.inProg},
     {id:'below',k:'Below minimum class size',v:below.length,d:'Enrolled is under the minimum',f:r=>r.below},
-    {id:'soon',k:'Sessions in next 14 days',v:soon.length,d:soon.length?soon.sort((a,b)=>a.days-b.days).map(r=>r.id).join(', '):'None scheduled',f:r=>r.soon},
+    {id:'soon',k:'Sessions in next 14 days',v:soon.length,d:soon.length?[...soon].sort((a,b)=>a.days-b.days).map(r=>r.id).join(', '):'None scheduled',f:r=>r.soon},
     {id:'certs',k:'Certificates pending',v:certTotal,d:`${cp.length} completed run${cp.length===1?'':'s'}`,f:r=>r.certsPending},
     {id:'chase',k:'Trainers to chase',v:chase.length,d:chase.length?chase.map(r=>r.id).join(', '):'All trainers on track',f:r=>r.chase,alert:chase.length>0}
   ];
+  if(isMgr()){
+    const nr=NOT_REPORTED.filter(c=>state.coord==='All'||c.coordinator_name===state.coord);
+    const names=nr.map(c=>c.coordinator_name);
+    cards.push({id:'noreport',k:'Not reported this week',v:nr.length,d:nr.length?names.join(', '):'Every coordinator has updated a run in the last 7 days',f:r=>names.includes(r.coord),alert:nr.length>0});
+  }
+  if(!cards.some(c=>c.id===state.card))state.card=null;
   $('#cards').innerHTML=cards.map(c=>`<button class="card btn${state.card===c.id?' active':''}${c.alert?' alert':''}" data-id="${c.id}" aria-pressed="${state.card===c.id}"><div class="k">${c.k}</div><div class="v">${c.v}</div><div class="d">${esc(c.d)}</div></button>`).join('');
   document.querySelectorAll('.card.btn').forEach(b=>b.onclick=()=>{state.card=state.card===b.dataset.id?null:b.dataset.id;render()});
 
-  // chart
+  // chart: number of runs at each stage
   const counts=STAGES.map(s=>({s,n:all.filter(r=>r.stage===s).length}));
   const max=Math.max(1,...counts.map(c=>c.n));
   $('#chart').innerHTML=counts.map(c=>`<div class="brow${state.stage===c.s?' sel':''}" data-s="${c.s}" data-tip="${c.s}: ${c.n} run${c.n===1?'':'s'}"><div class="bl">${c.s}</div><div class="btrack"><div class="bar" style="width:${c.n/max*100}%;background:${SC[c.s]}"></div></div><div class="bn">${c.n}</div></div>`).join('');
   document.querySelectorAll('.brow').forEach(b=>b.onclick=()=>{state.stage=state.stage===b.dataset.s?null:b.dataset.s;render()});
 
-  // attention
+  // needs attention
   $('#attn-count').textContent=`(${attn.length})`;
   const pri=r=>(r.soon&&r.below)?0:r.chase?1:2;
-  attn.sort((a,b)=>(pri(a)-pri(b))||((a.days??999)-(b.days??999))||(a.cdays-b.cdays));
-  $('#attn').innerHTML=attn.length?attn.map(r=>{
+  const sortedAttn=[...attn].sort((a,b)=>(pri(a)-pri(b))||((a.days??999)-(b.days??999))||((a.cdays??999)-(b.cdays??999)));
+  $('#attn').innerHTML=sortedAttn.length?sortedAttn.map(r=>{
     const chips=[];
     if(r.soon&&r.below)chips.push(`<span class="chip bad">▲ Short by ${r.min-r.enrolled} · ${r.enrolled}/${r.min} enrolled</span><span class="chip warn">◷ ${r.days===0?'Today':r.days===1?'Tomorrow':'In '+r.days+' days'} (${fmt(r.next)})</span>`);
     if(r.chase)chips.push(`<span class="chip bad">▲ Send reminder · confirm by ${fmt(r.confirm)} (${rel(r.cdays)})</span>`);
     if(r.certsPending)chips.push(`<span class="chip warn">✉ ${r.certs} certificate${r.certs===1?'':'s'} pending</span>`);
-    return `<li><div class="top"><span class="t">${esc(r.id)} · ${esc(r.course)}</span><span class="m">${esc(r.coord)} <button type="button" class="btn sm" data-edit="${esc(r.id)}" aria-label="Edit ${esc(r.id)}">Edit</button></span></div><div class="m">${esc(r.client)} · ${dot(r.stage)}${esc(r.stage)}</div><div class="chips">${chips.join('')}</div>${r.chase?`<div class="m">Trainer: ${esc(r.trainer)}</div><div class="acts">${trainerBtns(r)}</div>`:''}</li>`}).join(''):'<li class="empty">Nothing needs attention for this selection.</li>';
+    return `<li><div class="top"><span class="t">${esc(r.id)} · ${esc(r.course)}</span><span class="m">${esc(r.coord||'Unassigned')} <button type="button" class="btn sm" data-edit="${esc(r.id)}" aria-label="Edit ${esc(r.id)}">Edit</button></span></div><div class="m">${esc(r.client)} · ${dot(r.stage)}${esc(r.stage)}</div><div class="chips">${chips.join('')}</div>${r.chase?`<div class="m">Trainer: ${esc(r.trainer)}</div><div class="acts">${trainerBtns(r)}</div>`:''}</li>`}).join(''):'<li class="empty">Nothing needs attention for this selection.</li>';
 
   // table
   let rows=all;
@@ -281,7 +452,10 @@ function render(){
   const L=(l,v,c='')=>`<td${c?` class="${c}"`:''} data-label="${l}"><span>${v}</span></td>`;
   $('#tbl').innerHTML=`<thead><tr><th>Run</th><th>Client</th><th>Course</th><th>Coordinator</th><th>Stage</th><th class="n">Enrolled / min</th><th class="n">Attendance rate ↑</th><th>Next session</th><th class="n">Certs pending</th><th>Trainer</th></tr></thead><tbody>`+
    (rows.length?rows.map(r=>`<tr class="${r.attn?'hl':''}">`+
-     L('Run','<b>'+esc(r.id)+'</b>'+(EDITS[r.id]?' <span class="chip info">edited</span>':'')+`<br><button type="button" class="btn sm" data-edit="${esc(r.id)}" aria-label="Edit ${esc(r.id)}">Edit</button>`,'nw')+L('Client',esc(r.client))+L('Course',esc(r.course))+L('Coordinator',esc(r.coord))+
+     L('Run',`<b>${esc(r.id)}</b><br><button type="button" class="btn sm" data-edit="${esc(r.id)}" aria-label="Edit ${esc(r.id)}">Edit</button>`,'nw')+
+     L('Client',esc(r.client))+
+     L('Course',esc(r.course)+(r.note?`<br><span class="m">Note: ${esc(r.note)}</span>`:''))+
+     L('Coordinator',esc(r.coord||'Unassigned'))+
      L('Stage',dot(r.stage)+esc(r.stage),'nw')+
      L('Enrolled / min',`${r.enrolled} / ${r.min}${r.below?' <span class="chip bad">▲ Below</span>':''}`,'n')+
      `<td class="n" data-label="Attendance rate" data-tip="${r.rate===null?'Not started':r.attended+' of '+r.enrolled+' attended'}"><span>${pct(r)}</span></td>`+
@@ -289,13 +463,30 @@ function render(){
      L('Trainer',`<span class="tcell"><span>${esc(r.trainer)}</span>${trainerChip(r)}${r.tstate==='ok'?'':`<span class="m">Confirm by ${fmt(r.confirm)} · ${rel(r.cdays)}</span>`}<span class="tbtns">${trainerBtns(r)}</span></span>`)+'</tr>').join(''):'<tr><td class="empty" colspan="10">No runs match.</td></tr>')+'</tbody>';
 }
 
+/* ---------- Tooltip ---------- */
 const tip=$('#tip');
 document.addEventListener('mousemove',e=>{const t=e.target.closest('[data-tip]');if(t){tip.textContent=t.dataset.tip;tip.style.left=e.clientX+12+'px';tip.style.top=e.clientY+12+'px';tip.style.opacity=1}else tip.style.opacity=0});
 
-const modal=$('#modal');let editingId=null,opener=null;
-const FIELDS=['stage','enrolled','attended','certs'];
-function clearErrors(){FIELDS.forEach(f=>{const e=$('#e-'+f);if(e)e.textContent='';$('#g-'+f).classList.remove('bad')})}
-function setErr(f,msg){$('#e-'+f).textContent=msg;$('#g-'+f).classList.add('bad')}
+/* ---------- Friendly database errors ---------- */
+function friendly(err){
+  const m=err.message||'';
+  if(/runs_completed_needs_attended/.test(m))return 'Attended must be filled in before a run can be saved as Completed.';
+  if(/runs_attended_le_enrolled/.test(m))return 'Attended cannot be more than enrolled.';
+  if(/runs_note_check/.test(m))return 'The note must be one line of up to 200 characters.';
+  if(/runs_coordinator_name_fkey/.test(m))return 'That coordinator does not exist.';
+  if(err.code==='23505')return 'A run with this ID already exists.';
+  if(err.code==='42501'||/row-level security|permission denied/i.test(m))return 'You do not have permission to make that change.';
+  if(/Coordinators can only update/.test(m))return 'You can only update stage, enrolled, attended, certificates pending and the note.';
+  return m||'Something went wrong. Please try again.';
+}
+
+/* ---------- Edit / add run ---------- */
+const modal=$('#modal');
+let editingId=null,editingNew=false,opener=null,deleteArmed=false;
+const FIELDS=['id','client','type','course','coord','min','stage','enrolled','attended','certs','note','next','confirm','trainer'];
+function clearErrors(){FIELDS.forEach(f=>{const e=$('#e-'+f);if(e)e.textContent='';const g=$('#g-'+f);if(g)g.classList.remove('bad')});$('#m-err').hidden=true}
+function setErr(f,msg){const e=$('#e-'+f);if(e)e.textContent=msg;const g=$('#g-'+f);if(g)g.classList.add('bad')}
+function formError(msg){const e=$('#m-err');e.textContent=msg;e.hidden=!msg}
 function syncStage(){
   const done=$('#f-stage').value==='Completed',base=RUNS.find(r=>r.id===editingId);
   $('#f-certs').disabled=!done;
@@ -303,30 +494,79 @@ function syncStage(){
   if(!done)$('#f-certs').value='';
   $('#req').textContent=done?'(required for Completed)':'';
   const note=$('#m-note');
-  if(done&&base.next){note.hidden=false;note.textContent=`Saving as Completed clears the next session date (${fmt(base.next)}), so this run no longer counts as an upcoming session.`}
+  const nextDate=isMgr()?$('#f-next').value:(base&&base.next);
+  if(done&&nextDate){note.hidden=false;note.textContent=`Completed runs are not counted as upcoming sessions, so the next session date (${fmt(nextDate)}) will be ignored.`}
   else note.hidden=true;
 }
-function openEdit(id,btn){
-  const base=RUNS.find(r=>r.id===id),r=eff(base);editingId=id;opener=btn;
-  $('#m-title').textContent='Edit '+id;
-  $('#m-sub').textContent=`${base.course} · ${base.client} · minimum class size ${base.min}`;
-  $('#f-stage').value=r.stage;$('#f-enrolled').value=r.enrolled;$('#f-attended').value=r.attended??'';$('#f-certs').value=r.certs??'';
-  clearErrors();syncStage();modal.hidden=false;$('#f-stage').focus();
+function fillCoordSelect(selected){
+  const names=[...new Set([...COORDS.map(c=>c.coordinator_name)])].sort();
+  $('#f-coord').innerHTML='<option value="">Unassigned</option>'+names.map(n=>`<option value="${esc(n)}">${esc(n)}</option>`).join('');
+  $('#f-coord').value=selected||'';
 }
-function closeEdit(){modal.hidden=true;editingId=null;if(opener&&document.contains(opener))opener.focus()}
+function nextRunId(){
+  const nums=RUNS.map(r=>{const m=/^(.*?)(\d+)$/.exec(r.id);return m?+m[2]:0});
+  const prefix=(RUNS.map(r=>/^(.*?)\d+$/.exec(r.id)).find(Boolean)||[0,'WZ-R'])[1];
+  return prefix+String(Math.max(0,...nums)+1).padStart(2,'0');
+}
+function openEdit(id,btn){
+  const base=RUNS.find(r=>r.id===id);if(!base)return;
+  editingId=id;editingNew=false;opener=btn;deleteArmed=false;
+  $('#m-title').textContent='Edit '+id;
+  $('#m-sub').textContent=isMgr()?'You can edit every field of this run.':`${base.course} · ${base.client} · minimum class size ${base.min} · trainer ${base.trainer||'–'}. You can update stage, enrolled, attended, certificates pending and the note.`;
+  document.querySelectorAll('.mgr-only').forEach(e=>e.hidden=!isMgr());
+  modal.querySelector('.mbox').classList.toggle('wide',isMgr());
+  $('#f-id').value=base.id;$('#f-id').disabled=true;
+  $('#f-client').value=base.client;$('#f-type').value=base.type;$('#f-course').value=base.course;fillCoordSelect(base.coord);
+  $('#f-min').value=base.min;
+  $('#f-stage').value=base.stage;$('#f-enrolled').value=base.enrolled;$('#f-attended').value=base.attended??'';$('#f-certs').value=base.certs??'';
+  $('#f-note').value=base.note||'';
+  $('#f-next').value=base.next||'';$('#f-confirm').value=base.confirm||'';$('#f-trainer').value=base.trainer||'';$('#f-tstatus').value=base.tstatus;
+  $('#m-meta').textContent=base.updatedAt?'Last updated '+fmtTs(base.updatedAt):'';
+  $('#m-delete').hidden=!isMgr();$('#m-delete').textContent='Delete run';
+  clearErrors();syncStage();
+  $('#m-save').disabled=false;$('#m-save').textContent='Save';
+  modal.hidden=false;$('#f-stage').focus();
+}
+function openAdd(btn){
+  if(!isMgr())return;
+  editingId=null;editingNew=true;opener=btn;deleteArmed=false;
+  $('#m-title').textContent='Add run';$('#m-sub').textContent='Create a new run. You can assign a coordinator now or later.';
+  document.querySelectorAll('.mgr-only').forEach(e=>e.hidden=false);
+  modal.querySelector('.mbox').classList.add('wide');
+  $('#f-id').disabled=false;$('#f-id').value=nextRunId();
+  ['client','type','course','min','attended','certs','note','next','confirm','trainer'].forEach(f=>$('#f-'+f).value='');
+  $('#f-min').value='10';$('#f-enrolled').value='0';$('#f-stage').value='Planning';$('#f-tstatus').value='Pending';
+  fillCoordSelect('');
+  $('#m-meta').textContent='';$('#m-delete').hidden=true;
+  clearErrors();syncStage();
+  $('#m-save').disabled=false;$('#m-save').textContent='Add run';
+  modal.hidden=false;$('#f-id').focus();
+}
+function closeEdit(){modal.hidden=true;editingId=null;editingNew=false;if(opener&&document.contains(opener))opener.focus()}
 const toInt=v=>{v=String(v).trim();if(v==='')return null;const n=Number(v);return Number.isInteger(n)&&n>=0?n:NaN};
 $('#f-stage').onchange=()=>{clearErrors();syncStage()};
+$('#f-next').onchange=syncStage;
 $('#m-cancel').onclick=closeEdit;
 modal.addEventListener('mousedown',e=>{if(e.target===modal)closeEdit()});
 document.addEventListener('keydown',e=>{
   if(modal.hidden)return;
   if(e.key==='Escape'){closeEdit();return}
-  if(e.key==='Tab'){const f=[...modal.querySelectorAll('select,input,button')].filter(x=>!x.disabled);const a=f[0],z=f[f.length-1];
+  if(e.key==='Tab'){const f=[...modal.querySelectorAll('select,input,button')].filter(x=>!x.disabled&&x.offsetParent!==null);const a=f[0],z=f[f.length-1];
     if(e.shiftKey&&document.activeElement===a){e.preventDefault();z.focus()}else if(!e.shiftKey&&document.activeElement===z){e.preventDefault();a.focus()}}
 });
-$('#mform').addEventListener('submit',e=>{
+
+async function handleWriteResult(res){
+  if(res.error){
+    if(sessionProblem(res.error)){await sb.auth.signOut({scope:'local'});showLogin('Your session has expired. Please sign in again.');return false}
+    formError(friendly(res.error));return false;
+  }
+  return true;
+}
+
+$('#mform').addEventListener('submit',async e=>{
   e.preventDefault();clearErrors();
-  const base=RUNS.find(r=>r.id===editingId),stage=$('#f-stage').value,done=stage==='Completed';
+  const mgr=isMgr();
+  const stage=$('#f-stage').value,done=stage==='Completed';
   const enrolled=toInt($('#f-enrolled').value),attended=toInt($('#f-attended').value),certs=toInt($('#f-certs').value);
   let ok=true;
   if(enrolled===null||Number.isNaN(enrolled)){setErr('enrolled','Enter a whole number, 0 or more.');ok=false}
@@ -334,32 +574,110 @@ $('#mform').addEventListener('submit',e=>{
   else if(done&&attended===null){setErr('attended','Attended must be filled in before a run can be saved as Completed.');ok=false}
   else if(attended!==null&&enrolled!==null&&!Number.isNaN(enrolled)&&attended>enrolled){setErr('attended','Attended cannot be more than enrolled ('+enrolled+').');ok=false}
   if(done&&Number.isNaN(certs)){setErr('certs','Enter a whole number, 0 or more.');ok=false}
+  const note=$('#f-note').value.trim();
+  if(note.length>200){setErr('note','Keep the note to 200 characters or fewer.');ok=false}
+  let minSize=null;
+  if(mgr){
+    if(!$('#f-client').value.trim()){setErr('client','Required.');ok=false}
+    if(!$('#f-type').value.trim()){setErr('type','Required.');ok=false}
+    if(!$('#f-course').value.trim()){setErr('course','Required.');ok=false}
+    minSize=toInt($('#f-min').value);
+    if(minSize===null||Number.isNaN(minSize)){setErr('min','Enter a whole number, 0 or more.');ok=false}
+    if(editingNew&&!$('#f-id').value.trim()){setErr('id','Required.');ok=false}
+  }
   if(!ok){const first=modal.querySelector('.field.bad input,.field.bad select');if(first)first.focus();return}
-  const edit={stage,enrolled,attended,certs:done?(certs??0):null};
-  const same=edit.stage===base.stage&&edit.enrolled===base.enrolled&&edit.attended===(base.attended??null)&&(edit.certs??null)===(base.certs??null);
-  if(same)delete EDITS[editingId];else EDITS[editingId]=edit;
-  persist();closeEdit();render();
-});
-document.addEventListener('click',e=>{const b=e.target.closest('[data-edit]');if(b)openEdit(b.dataset.edit,b)});
-$('#reset').onclick=()=>{EDITS={};TCONF={};persist();persistT();render()};
 
+  const common={stage,enrolled,attended,certificates_pending:done?(certs??0):null,note:note||null};
+  const btn=$('#m-save');btn.disabled=true;btn.textContent='Saving…';
+  let res;
+  if(editingNew){
+    const row={...common,id:$('#f-id').value.trim(),client:$('#f-client').value.trim(),client_type:$('#f-type').value.trim(),course:$('#f-course').value.trim(),
+      coordinator_name:$('#f-coord').value||null,min_class_size:minSize,next_session_date:$('#f-next').value||null,trainer:$('#f-trainer').value.trim()||null,
+      trainer_status:$('#f-tstatus').value,confirm_by:$('#f-confirm').value||null};
+    res=await sb.from('runs').insert(row).select();
+  }else{
+    const base=RUNS.find(r=>r.id===editingId);
+    let patch=common;
+    if(mgr)patch={...common,client:$('#f-client').value.trim(),client_type:$('#f-type').value.trim(),course:$('#f-course').value.trim(),
+      coordinator_name:$('#f-coord').value||null,min_class_size:minSize,next_session_date:$('#f-next').value||null,trainer:$('#f-trainer').value.trim()||null,
+      trainer_status:$('#f-tstatus').value,confirm_by:$('#f-confirm').value||null};
+    const cur={stage:base.stage,enrolled:base.enrolled,attended:base.attended,certificates_pending:base.certs,note:base.note||null,
+      client:base.client,client_type:base.type,course:base.course,coordinator_name:base.coord,min_class_size:base.min,next_session_date:base.next,
+      trainer:base.trainer,trainer_status:base.tstatus,confirm_by:base.confirm};
+    const changed=Object.keys(patch).filter(k=>(patch[k]??null)!==(cur[k]??null));
+    if(!changed.length){btn.disabled=false;btn.textContent='Save';closeEdit();return}
+    const send={};changed.forEach(k=>send[k]=patch[k]);
+    res=await sb.from('runs').update(send).eq('id',editingId).select();
+  }
+  btn.disabled=false;btn.textContent=editingNew?'Add run':'Save';
+  if(!(await handleWriteResult(res)))return;
+  if(!res.data||res.data.length!==1){formError('Nothing was saved. You may not have permission, or the run no longer exists.');return}
+  closeEdit();await loadData();
+});
+
+$('#m-delete').addEventListener('click',async()=>{
+  if(!isMgr()||!editingId)return;
+  const b=$('#m-delete');
+  if(!deleteArmed){deleteArmed=true;b.textContent='Click again to delete '+editingId;return}
+  b.disabled=true;b.textContent='Deleting…';
+  const res=await sb.from('runs').delete().eq('id',editingId).select();
+  b.disabled=false;
+  if(!(await handleWriteResult(res))){deleteArmed=false;b.textContent='Delete run';return}
+  if(!res.data||res.data.length!==1){deleteArmed=false;b.textContent='Delete run';formError('Nothing was deleted. The run may already be gone.');return}
+  closeEdit();await loadData();
+});
+
+/* ---------- Clicks: edit buttons, mark confirmed, copy reminder ---------- */
 const cmodal=$('#cmodal');
 function closeCopy(){cmodal.hidden=true}
 $('#c-close').onclick=closeCopy;
 cmodal.addEventListener('mousedown',e=>{if(e.target===cmodal)closeCopy()});
 document.addEventListener('keydown',e=>{if(!cmodal.hidden&&e.key==='Escape')closeCopy()});
-const runById=id=>enrich(eff(RUNS.find(r=>r.id===id)));
 document.addEventListener('click',async e=>{
-  const c=e.target.closest('[data-copy]'),m=e.target.closest('[data-confirm]'),u=e.target.closest('[data-undo]');
-  if(m){TCONF[m.dataset.confirm]=true;persistT();render();return}
-  if(u){delete TCONF[u.dataset.undo];persistT();render();return}
+  const ed=e.target.closest('[data-edit]'),c=e.target.closest('[data-copy]'),m=e.target.closest('[data-confirm]');
+  if(ed){openEdit(ed.dataset.edit,ed);return}
+  if(m&&isMgr()){
+    m.disabled=true;m.textContent='Saving…';
+    const res=await sb.from('runs').update({trainer_status:'Confirmed'}).eq('id',m.dataset.confirm).select();
+    if(res.error&&sessionProblem(res.error)){await sb.auth.signOut({scope:'local'});showLogin('Your session has expired. Please sign in again.');return}
+    if(res.error||!res.data||res.data.length!==1)showBanner('Could not mark the trainer as confirmed: '+(res.error?friendly(res.error):'no row was updated.'));
+    await loadData();return;
+  }
   if(c){
-    const text=reminderText(runById(c.dataset.copy));
+    const r=enrich(eff(RUNS.find(x=>x.id===c.dataset.copy)));
+    const text=reminderText(r);
     try{await navigator.clipboard.writeText(text);const old=c.textContent;c.textContent='Copied ✓';setTimeout(()=>{if(c.isConnected)c.textContent=old},1800)}
     catch(err){$('#ctext').value=text;cmodal.hidden=false;$('#ctext').focus();$('#ctext').select()}
   }
 });
-render();
+
+/* ---------- Header controls ---------- */
+$('#coord').onchange=e=>{state.coord=e.target.value;render()};
+$('#asat').onchange=e=>{if(e.target.value){state.asat=e.target.value;render()}};
+$('#addrun').onclick=e=>openAdd(e.currentTarget);
+$('#refresh').onclick=async e=>{const b=e.currentTarget;b.disabled=true;await loadData();b.disabled=false};
+$('#banner-retry').onclick=()=>loadData();
+$('#signout').onclick=async()=>{await sb.auth.signOut();showLogin()};
+
+/* ---------- Login ---------- */
+$('#lform').addEventListener('submit',async e=>{
+  e.preventDefault();
+  const email=$('#l-email').value.trim(),password=$('#l-pass').value;
+  if(!email||!password){setLoginError('Enter your email and password.');return}
+  setLoginError('');
+  const b=$('#lgo');b.disabled=true;b.textContent='Signing in…';
+  const {error}=await sb.auth.signInWithPassword({email,password});
+  if(error){
+    b.disabled=false;b.textContent='Sign in';
+    setLoginError(error.status===400||/invalid login/i.test(error.message)?'Email or password is incorrect.':'Could not sign in: '+error.message);
+    $('#l-pass').value='';$('#l-pass').focus();return;
+  }
+  $('#l-pass').value='';
+  b.textContent='Loading…';
+  await enter();
+});
+
+boot();
 </script>
 </body>
 </html>
