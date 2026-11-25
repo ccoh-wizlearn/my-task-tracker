@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wizlearn Training Tracker</title>
+<style>
+:root{--bg:#f6f7f9;--card:#fff;--ink:#1c2530;--ink2:#52606f;--muted:#8693a1;--line:#e3e7ec;--accent:#2a6fdb;--bar:#2a6fdb;--bad:#b42318;--badbg:#fdecea;--warn:#8a5a00;--warnbg:#fff4d6;--ok:#17653a;--okbg:#e4f5ea;--s1:#2a78d6;--s2:#eb6834;--s3:#1baf7a;--s4:#eda100}
+@media(prefers-color-scheme:dark){:root{--bg:#12161b;--card:#1a2027;--ink:#e8edf2;--ink2:#a8b3bf;--muted:#78858f;--line:#2b343d;--accent:#6aa3f5;--bar:#6aa3f5;--bad:#ff9b8f;--badbg:#3a1f1c;--warn:#f0c15a;--warnbg:#3a2f14;--ok:#7fd49c;--okbg:#17301f;--s1:#3987e5;--s2:#d95926;--s3:#199e70;--s4:#c98500}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:1180px;margin:0 auto;padding:24px 20px 48px}
+header{display:flex;flex-wrap:wrap;gap:16px;align-items:flex-end;justify-content:space-between;margin-bottom:20px}
+h1{font-size:22px;margin:0 0 2px}
+.sub{color:var(--ink2);font-size:13px}
+.controls{display:flex;gap:14px;flex-wrap:wrap;align-items:flex-end}
+label{display:flex;flex-direction:column;font-size:12px;color:var(--ink2);gap:4px}
+select,input[type=date]{font:inherit;padding:7px 10px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink);min-width:170px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:18px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 18px}
+.card .k{font-size:12px;color:var(--ink2);text-transform:uppercase;letter-spacing:.04em}
+.card .v{font-size:34px;font-weight:650;margin:4px 0 2px;font-variant-numeric:tabular-nums}
+.card .d{font-size:12.5px;color:var(--ink2)}
+.card.btn{cursor:pointer;text-align:left;font:inherit;color:inherit;width:100%}
+.card.btn:hover,.card.btn:focus-visible{border-color:var(--accent);outline:none}
+.card.active{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent) inset}
+h2{font-size:15px;margin:0 0 4px}
+.hint{font-size:12px;color:var(--muted);margin:0 0 12px}
+.chart{display:flex;flex-direction:column;gap:10px}
+.brow{display:grid;grid-template-columns:110px 1fr 28px;align-items:center;gap:10px;cursor:pointer;border-radius:6px;padding:2px 0}
+.brow:hover .bar,.brow.sel .bar{filter:brightness(.85)}
+.brow.sel .bl{font-weight:650}
+.bl{font-size:13px;color:var(--ink2)}
+.btrack{height:24px;background:transparent;position:relative}
+.bar{height:100%;border-radius:0 4px 4px 0;min-width:2px;transition:width .3s}
+.bn{font-weight:650;text-align:right;font-variant-numeric:tabular-nums}
+.att{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+.att li{border:1px solid var(--line);border-radius:10px;padding:11px 13px;display:grid;gap:4px}
+.att .top{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.att .t{font-weight:600}
+.att .m{color:var(--ink2);font-size:12.5px}
+.chip{display:inline-flex;align-items:center;gap:5px;font-size:12px;padding:2px 9px;border-radius:99px;font-weight:550}
+.chip.bad{background:var(--badbg);color:var(--bad)}
+.chip.warn{background:var(--warnbg);color:var(--warn)}
+.chip.ok{background:var(--okbg);color:var(--ok)}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:2px}
+.empty{color:var(--muted);padding:14px 0}
+.tablewrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th,td{text-align:left;padding:8px 6px;border-bottom:1px solid var(--line);vertical-align:top}
+th{letter-spacing:.02em;font-size:11px}
+td.n,td.nw{white-space:nowrap}
+th{font-size:11.5px;color:var(--ink2);text-transform:uppercase;letter-spacing:.04em;font-weight:600}
+td.n,th.n{text-align:right;font-variant-numeric:tabular-nums}
+tr.hl td{background:color-mix(in srgb,var(--warnbg) 55%,transparent)}
+
+@media(max-width:1100px){
+  .tablewrap{overflow:visible}
+  table,tbody,tr,td{display:block;width:100%}
+  thead{display:none}
+  tr{border:1px solid var(--line);border-radius:10px;padding:8px 12px;margin-bottom:10px}
+  tr.hl{border-color:var(--warn);background:color-mix(in srgb,var(--warnbg) 55%,transparent)}
+  tr.hl td{background:none}
+  td.nw,td.n{white-space:normal}
+  td>span{text-align:right}
+  .tcell{align-items:flex-end}
+  .tbtns{justify-content:flex-end}
+  td{white-space:normal;border:0;padding:4px 0;display:flex;justify-content:space-between;gap:12px;text-align:right}
+  td::before{content:attr(data-label);color:var(--muted);font-size:12px;text-align:left;flex:0 0 40%}
+  td.n,td{text-align:right}
+  td.empty{display:block;text-align:left}
+  td.empty::before{content:none}
+}
+@media(max-width:640px){
+  .wrap{padding:16px 12px 40px}
+  h1{font-size:19px}
+  header{flex-direction:column;align-items:stretch;gap:12px}
+  .controls{width:100%;gap:10px}
+  .controls label{flex:1 1 140px}
+  select,input[type=date]{min-width:0;width:100%;min-height:44px;font-size:16px}
+  .cards{grid-template-columns:1fr 1fr;gap:10px}
+  .card{padding:13px 14px}
+  .card .v{font-size:28px}
+  .card .k{font-size:11px}
+  .brow{grid-template-columns:96px 1fr 24px;min-height:44px}
+  .att .top{flex-direction:column;gap:2px}
+  .chip{font-size:12.5px}
+  .cards .card:last-child:nth-child(odd){grid-column:1/-1}
+  .btn.sm{min-height:40px;padding:6px 14px}
+}
+
+.btn{font:inherit;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:8px;padding:7px 12px;cursor:pointer}
+.btn:hover,.btn:focus-visible{border-color:var(--accent);outline:none}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--bg);font-weight:600}
+.btn.sm{padding:3px 9px;font-size:12px;margin-top:4px}
+.chip.info{background:var(--line);color:var(--ink2)}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;padding:16px;z-index:20}
+.overlay[hidden]{display:none}
+.mbox{background:var(--card);color:var(--ink);border-radius:14px;max-width:440px;width:100%;padding:20px;max-height:92vh;overflow:auto;border:1px solid var(--line)}
+.mbox h2{font-size:18px;margin:0}
+.field{display:flex;flex-direction:column;gap:4px;margin-top:14px}
+.field label{display:block;flex-direction:initial}
+.field input,.field select{font:inherit;padding:9px 10px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink);width:100%;min-height:44px}
+.field input:disabled{opacity:.5}
+.field.bad input,.field.bad select{border-color:var(--bad)}
+.err{color:var(--bad);font-size:12.5px}
+.note{font-size:12.5px;color:var(--ink2);margin-top:12px;background:var(--badbg);background:var(--warnbg);color:var(--warn);padding:8px 10px;border-radius:8px}
+.mact{display:flex;gap:10px;justify-content:flex-end;margin-top:18px}
+.mact .btn{min-height:44px;padding:8px 18px}
+.chip.bad,.chip.warn,.chip.ok{white-space:nowrap}
+.acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+.tcell{display:inline-flex;flex-direction:column;align-items:flex-start;gap:2px}
+.tcell .m{font-size:12px;color:var(--ink2)}
+.tbtns{display:flex;gap:6px;flex-wrap:wrap}
+.card.alert .v{color:var(--bad)}
+#ctext{width:100%;min-height:150px;font:inherit;padding:10px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink);margin-top:12px;resize:vertical}
+#tip{position:fixed;pointer-events:none;background:var(--ink);color:var(--bg);padding:6px 9px;border-radius:6px;font-size:12px;opacity:0;transition:opacity .1s;z-index:9;max-width:260px}
+.dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;vertical-align:baseline}
+.sect{margin-bottom:18px}
+.foot{color:var(--muted);font-size:12px;margin-top:16px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div>
+    <h1>Client training tracker</h1>
+    <div class="sub" id="sub"></div>
+  </div>
+  <div class="controls">
+    <label>Coordinator<select id="coord"></select></label>
+    <label>As at date<input type="date" id="asat"></label>
+    <button class="btn" id="reset" type="button" hidden>Reset edits</button>
+  </div>
+</header>
+
+<section class="card sect" aria-label="Needs attention">
+  <h2>Needs attention <span id="attn-count" class="sub"></span></h2>
+  <p class="hint">Session within 14 days and enrolment below minimum, completed with certificates pending, or a trainer to chase (pending, confirm-by date within 3 days or passed).</p>
+  <ul class="att" id="attn"></ul>
+</section>
+
+<section class="cards" id="cards" aria-label="Summary"></section>
+
+<section class="card sect">
+  <h2>Runs by stage</h2>
+  <p class="hint">Click a stage to filter the table below.</p>
+  <div class="chart" id="chart"></div>
+</section>
+
+<section class="card">
+  <h2>All runs <span id="tbl-note" class="sub"></span></h2>
+  <p class="hint">Sorted by attendance rate, lowest first (attended ÷ enrolled; runs not yet started are listed last). Highlighted rows need attention. Click a card or stage to narrow the list.</p>
+  <div class="tablewrap"><table id="tbl"></table></div>
+</section>
+<p class="foot">Source: Client_training_tracker.xlsx (15 runs, fictional sample data, sheet dated 23 Nov 2026). Edits are kept in this browser only and do not change the spreadsheet. “Next 14 days” counts the as-at date through 14 days after it, inclusive.</p>
+</div>
+<div class="overlay" id="modal" hidden>
+  <form class="mbox" id="mform" role="dialog" aria-modal="true" aria-labelledby="m-title" novalidate>
+    <h2 id="m-title">Edit run</h2>
+    <div class="sub" id="m-sub"></div>
+    <div class="field" id="g-stage"><label for="f-stage">Stage</label>
+      <select id="f-stage"><option>Planning</option><option>Enrolment open</option><option>Running</option><option>Completed</option></select></div>
+    <div class="field" id="g-enrolled"><label for="f-enrolled">Enrolled</label>
+      <input id="f-enrolled" type="number" inputmode="numeric" min="0" step="1"><span class="err" id="e-enrolled"></span></div>
+    <div class="field" id="g-attended"><label for="f-attended">Attended <span id="req" class="sub"></span></label>
+      <input id="f-attended" type="number" inputmode="numeric" min="0" step="1" placeholder="Leave blank if not started"><span class="err" id="e-attended"></span></div>
+    <div class="field" id="g-certs"><label for="f-certs">Certificates pending <span class="sub">(completed runs only)</span></label>
+      <input id="f-certs" type="number" inputmode="numeric" min="0" step="1"><span class="err" id="e-certs"></span></div>
+    <div class="note" id="m-note" hidden></div>
+    <div class="mact"><button type="button" class="btn" id="m-cancel">Cancel</button><button type="submit" class="btn primary">Save</button></div>
+  </form>
+</div>
+<div class="overlay" id="cmodal" hidden>
+  <div class="mbox" role="dialog" aria-modal="true" aria-labelledby="c-title">
+    <h2 id="c-title">Copy reminder</h2>
+    <div class="sub">Your browser did not allow automatic copying. Select the text below and copy it.</div>
+    <textarea id="ctext" readonly></textarea>
+    <div class="mact"><button type="button" class="btn primary" id="c-close">Close</button></div>
+  </div>
+</div>
+<div id="tip"></div>
+<script>
+const RUNS=[{"id": "WZ-R01", "client": "Meadowbrook Community Hospital", "type": "Community hospital", "course": "Infection Control Refresher 2026", "coord": "Nurul Huda", "stage": "Running", "min": 10, "enrolled": 18, "attended": 17, "certs": null, "next": "2026-11-26", "trainer": "Dr Grace Leong", "tstatus": "Confirmed", "confirm": "2026-11-10"}, {"id": "WZ-R02", "client": "Lumen Medical Association", "type": "Medical association", "course": "CME: Clinical Documentation Update", "coord": "Marcus Tan", "stage": "Completed", "min": 15, "enrolled": 24, "attended": 22, "certs": 6, "next": null, "trainer": "Kenneth Soh", "tstatus": "Confirmed", "confirm": "2026-10-20"}, {"id": "WZ-R03", "client": "Eastvale Nursing Home", "type": "Nursing home", "course": "Fall Prevention Basics", "coord": "Wei Ling Ong", "stage": "Enrolment open", "min": 12, "enrolled": 7, "attended": null, "certs": null, "next": "2026-12-03", "trainer": "Farida Yusof", "tstatus": "Pending", "confirm": "2026-11-26"}, {"id": "WZ-R04", "client": "Harbourview Community Hospital", "type": "Community hospital", "course": "Digital Records Basics for Community Care Staff", "coord": "Arjun Nair", "stage": "Enrolment open", "min": 10, "enrolled": 14, "attended": null, "certs": null, "next": "2026-12-15", "trainer": "Benjamin Teo", "tstatus": "Pending", "confirm": "2026-12-04"}, {"id": "WZ-R05", "client": "Silverleaf Nursing Home", "type": "Nursing home", "course": "Dementia Care Essentials", "coord": "Nurul Huda", "stage": "Enrolment open", "min": 12, "enrolled": 9, "attended": null, "certs": null, "next": "2026-12-07", "trainer": "Selvi Krishnan", "tstatus": "Confirmed", "confirm": "2026-11-20"}, {"id": "WZ-R06", "client": "Northgate Healthcare Training Institute", "type": "Healthcare training institute", "course": "Train the Trainer: LMS Course Builder", "coord": "Marcus Tan", "stage": "Planning", "min": 8, "enrolled": 0, "attended": null, "certs": null, "next": "2027-01-12", "trainer": "Rachel Lau", "tstatus": "Pending", "confirm": "2026-12-18"}, {"id": "WZ-R07", "client": "Pinewood Home Care", "type": "Healthcare agency", "course": "Medication Safety Refresher", "coord": "Wei Ling Ong", "stage": "Running", "min": 10, "enrolled": 12, "attended": 11, "certs": null, "next": "2026-12-01", "trainer": "Dr Grace Leong", "tstatus": "Confirmed", "confirm": "2026-11-06"}, {"id": "WZ-R08", "client": "Lumen Medical Association", "type": "Medical association", "course": "CME: Ethics in Practice", "coord": "Arjun Nair", "stage": "Completed", "min": 15, "enrolled": 30, "attended": 28, "certs": 0, "next": null, "trainer": "Kenneth Soh", "tstatus": "Confirmed", "confirm": "2026-10-02"}, {"id": "WZ-R09", "client": "Meadowbrook Community Hospital", "type": "Community hospital", "course": "Fire Safety 2026", "coord": "Marcus Tan", "stage": "Completed", "min": 10, "enrolled": 20, "attended": 19, "certs": 4, "next": null, "trainer": "Benjamin Teo", "tstatus": "Confirmed", "confirm": "2026-10-16"}, {"id": "WZ-R10", "client": "Eastvale Nursing Home", "type": "Nursing home", "course": "Infection Control Refresher 2026", "coord": "Nurul Huda", "stage": "Enrolment open", "min": 12, "enrolled": 13, "attended": null, "certs": null, "next": "2026-12-10", "trainer": "Farida Yusof", "tstatus": "Pending", "confirm": "2026-11-23"}, {"id": "WZ-R11", "client": "Harbourview Community Hospital", "type": "Community hospital", "course": "Person-Centred Care", "coord": "Wei Ling Ong", "stage": "Running", "min": 12, "enrolled": 15, "attended": 14, "certs": null, "next": "2026-11-25", "trainer": "Selvi Krishnan", "tstatus": "Confirmed", "confirm": "2026-11-04"}, {"id": "WZ-R12", "client": "Silverleaf Nursing Home", "type": "Nursing home", "course": "Digital Records Basics for Community Care Staff", "coord": "Arjun Nair", "stage": "Planning", "min": 10, "enrolled": 4, "attended": null, "certs": null, "next": "2027-01-19", "trainer": "Benjamin Teo", "tstatus": "Pending", "confirm": "2027-01-05"}, {"id": "WZ-R13", "client": "Riverside Community Care Agency", "type": "Healthcare agency", "course": "Basic Caregiving Skills", "coord": "Marcus Tan", "stage": "Enrolment open", "min": 15, "enrolled": 11, "attended": null, "certs": null, "next": "2026-12-08", "trainer": "Rachel Lau", "tstatus": "Pending", "confirm": "2026-11-27"}, {"id": "WZ-R14", "client": "Northgate Healthcare Training Institute", "type": "Healthcare training institute", "course": "LMS Admin Basics", "coord": "Nurul Huda", "stage": "Completed", "min": 8, "enrolled": 10, "attended": 10, "certs": 0, "next": null, "trainer": "Rachel Lau", "tstatus": "Confirmed", "confirm": "2026-09-25"}, {"id": "WZ-R15", "client": "Pinewood Home Care", "type": "Healthcare agency", "course": "Fall Prevention Basics", "coord": "Arjun Nair", "stage": "Completed", "min": 10, "enrolled": 11, "attended": 9, "certs": 2, "next": null, "trainer": "Farida Yusof", "tstatus": "Confirmed", "confirm": "2026-10-09"}];
+const STAGES=['Planning','Enrolment open','Running','Completed'];
+const $=s=>document.querySelector(s);
+const DAY=864e5;
+const SC={'Planning':'var(--s1)','Enrolment open':'var(--s2)','Running':'var(--s3)','Completed':'var(--s4)'};
+const dot=s=>`<span class="dot" style="background:${SC[s]}"></span>`;
+const parse=s=>{if(!s)return null;const[y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d)};
+const fmt=s=>s?parse(s).toLocaleDateString('en-GB',{day:'numeric',month:'short'}):'–';
+const iso=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+let EDITS={};
+try{EDITS=JSON.parse(localStorage.getItem('wz-edits')||'{}')||{}}catch(e){EDITS={}}
+const persist=()=>{try{localStorage.setItem('wz-edits',JSON.stringify(EDITS))}catch(e){}};
+let TCONF={};
+try{TCONF=JSON.parse(localStorage.getItem('wz-trainer')||'{}')||{}}catch(e){TCONF={}}
+const persistT=()=>{try{localStorage.setItem('wz-trainer',JSON.stringify(TCONF))}catch(e){}};
+// effective run = spreadsheet row + saved edits; completed runs have no next session, certificates only on completed runs
+function eff(r0){const r=TCONF[r0.id]?{...r0,tstatus:'Confirmed'}:r0;const e=EDITS[r.id];if(!e)return r;const done=e.stage==='Completed';
+  return {...r,stage:e.stage,enrolled:e.enrolled,attended:e.attended,certs:done?(e.certs??0):null,next:done?null:r.next}}
+let state={coord:'All',stage:null,card:null,asat:iso(new Date())};
+
+const coords=['All',...[...new Set(RUNS.map(r=>r.coord))].sort()];
+$('#coord').innerHTML=coords.map(c=>`<option value="${esc(c)}">${c==='All'?'All coordinators':esc(c)}</option>`).join('');
+$('#asat').value=state.asat;
+$('#coord').onchange=e=>{state.coord=e.target.value;render()};
+$('#asat').onchange=e=>{if(e.target.value){state.asat=e.target.value;render()}};
+
+function enrich(r){
+  const today=parse(state.asat);
+  const days=r.next?Math.round((parse(r.next)-today)/DAY):null;
+  const soon=days!==null&&days>=0&&days<=14;
+  const below=r.enrolled<r.min;
+  const certs=r.stage==='Completed'&&r.certs>0;
+  const cdays=r.confirm?Math.round((parse(r.confirm)-today)/DAY):null;
+  const tstate=r.tstatus==='Confirmed'?'ok':(cdays!==null&&cdays<=3?'chase':'pending');
+  const chase=tstate==='chase';
+  const attn=(soon&&below)||certs||chase;
+  const rate=(r.attended!=null&&r.enrolled>0)?r.attended/r.enrolled:null;
+  return {...r,days,soon,below,rate,cdays,tstate,chase,certsPending:certs,attn,inProg:r.stage!=='Completed'};
+}
+
+const fmtLong=s=>parse(s).toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short',year:'numeric'});
+const rel=d=>d===null?'':d<0?`${-d} day${d===-1?'':'s'} overdue`:d===0?'today':d===1?'tomorrow':`in ${d} days`;
+function reminderText(r){
+  const sess=r.next?`Session date: ${fmtLong(r.next)}`:'Session date: to be confirmed';
+  const by=r.cdays<0?`Please confirm as soon as you can. The confirm-by date was ${fmtLong(r.confirm)}.`:`Please confirm by ${fmtLong(r.confirm)}.`;
+  return `Hi ${r.trainer},\n\nA quick reminder to confirm that you can deliver "${r.course}" for ${r.client}.\n${sess}\n${by}\n\nThank you,\n${r.coord}, Wizlearn`;
+}
+const trainerBtns=r=>{
+  if(r.tstate==='ok')return TCONF[r.id]?`<button type="button" class="btn sm" data-undo="${esc(r.id)}">Undo confirmed</button>`:'';
+  return (r.chase?`<button type="button" class="btn sm" data-copy="${esc(r.id)}">Copy reminder</button>`:'')+`<button type="button" class="btn sm" data-confirm="${esc(r.id)}">Mark confirmed</button>`;
+};
+const trainerChip=r=>r.tstate==='ok'?'<span class="chip ok">✓ Confirmed</span>':r.tstate==='chase'?'<span class="chip bad">▲ Send reminder</span>':'<span class="chip warn">◷ Pending</span>';
+function render(){
+  const all=RUNS.map(r=>enrich(eff(r))).filter(r=>state.coord==='All'||r.coord===state.coord);
+  const inProg=all.filter(r=>r.inProg),below=all.filter(r=>r.below),soon=all.filter(r=>r.soon),cp=all.filter(r=>r.certsPending),attn=all.filter(r=>r.attn),chase=all.filter(r=>r.chase);
+  const certTotal=all.reduce((a,r)=>a+(r.certs||0),0);
+  const nEdits=Object.keys(EDITS).length+Object.keys(TCONF).length;$('#reset').hidden=!nEdits;$('#reset').textContent=`Reset ${nEdits} edit${nEdits===1?'':'s'}`;
+  $('#sub').textContent=`${all.length} runs${state.coord==='All'?' across all coordinators':' for '+state.coord} · as at ${parse(state.asat).toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short',year:'numeric'})}`;
+
+  const cards=[
+    {id:'inprog',k:'Runs in progress',v:inProg.length,d:'Every run not yet completed',f:r=>r.inProg},
+    {id:'below',k:'Below minimum class size',v:below.length,d:'Enrolled is under the minimum',f:r=>r.below},
+    {id:'soon',k:'Sessions in next 14 days',v:soon.length,d:soon.length?soon.sort((a,b)=>a.days-b.days).map(r=>r.id).join(', '):'None scheduled',f:r=>r.soon},
+    {id:'certs',k:'Certificates pending',v:certTotal,d:`${cp.length} completed run${cp.length===1?'':'s'}`,f:r=>r.certsPending},
+    {id:'chase',k:'Trainers to chase',v:chase.length,d:chase.length?chase.map(r=>r.id).join(', '):'All trainers on track',f:r=>r.chase,alert:chase.length>0}
+  ];
+  $('#cards').innerHTML=cards.map(c=>`<button class="card btn${state.card===c.id?' active':''}${c.alert?' alert':''}" data-id="${c.id}" aria-pressed="${state.card===c.id}"><div class="k">${c.k}</div><div class="v">${c.v}</div><div class="d">${esc(c.d)}</div></button>`).join('');
+  document.querySelectorAll('.card.btn').forEach(b=>b.onclick=()=>{state.card=state.card===b.dataset.id?null:b.dataset.id;render()});
+
+  // chart
+  const counts=STAGES.map(s=>({s,n:all.filter(r=>r.stage===s).length}));
+  const max=Math.max(1,...counts.map(c=>c.n));
+  $('#chart').innerHTML=counts.map(c=>`<div class="brow${state.stage===c.s?' sel':''}" data-s="${c.s}" data-tip="${c.s}: ${c.n} run${c.n===1?'':'s'}"><div class="bl">${c.s}</div><div class="btrack"><div class="bar" style="width:${c.n/max*100}%;background:${SC[c.s]}"></div></div><div class="bn">${c.n}</div></div>`).join('');
+  document.querySelectorAll('.brow').forEach(b=>b.onclick=()=>{state.stage=state.stage===b.dataset.s?null:b.dataset.s;render()});
+
+  // attention
+  $('#attn-count').textContent=`(${attn.length})`;
+  const pri=r=>(r.soon&&r.below)?0:r.chase?1:2;
+  attn.sort((a,b)=>(pri(a)-pri(b))||((a.days??999)-(b.days??999))||(a.cdays-b.cdays));
+  $('#attn').innerHTML=attn.length?attn.map(r=>{
+    const chips=[];
+    if(r.soon&&r.below)chips.push(`<span class="chip bad">▲ Short by ${r.min-r.enrolled} · ${r.enrolled}/${r.min} enrolled</span><span class="chip warn">◷ ${r.days===0?'Today':r.days===1?'Tomorrow':'In '+r.days+' days'} (${fmt(r.next)})</span>`);
+    if(r.chase)chips.push(`<span class="chip bad">▲ Send reminder · confirm by ${fmt(r.confirm)} (${rel(r.cdays)})</span>`);
+    if(r.certsPending)chips.push(`<span class="chip warn">✉ ${r.certs} certificate${r.certs===1?'':'s'} pending</span>`);
+    return `<li><div class="top"><span class="t">${esc(r.id)} · ${esc(r.course)}</span><span class="m">${esc(r.coord)} <button type="button" class="btn sm" data-edit="${esc(r.id)}" aria-label="Edit ${esc(r.id)}">Edit</button></span></div><div class="m">${esc(r.client)} · ${dot(r.stage)}${esc(r.stage)}</div><div class="chips">${chips.join('')}</div>${r.chase?`<div class="m">Trainer: ${esc(r.trainer)}</div><div class="acts">${trainerBtns(r)}</div>`:''}</li>`}).join(''):'<li class="empty">Nothing needs attention for this selection.</li>';
+
+  // table
+  let rows=all;
+  const cf=cards.find(c=>c.id===state.card);
+  if(cf)rows=rows.filter(cf.f);
+  if(state.stage)rows=rows.filter(r=>r.stage===state.stage);
+  const notes=[];if(cf)notes.push(cf.k);if(state.stage)notes.push(state.stage);
+  $('#tbl-note').textContent=`(${rows.length}${notes.length?' · filtered: '+notes.join(', '):''})`;
+  rows=[...rows].sort((a,b)=>(a.rate===null)-(b.rate===null)||(a.rate-b.rate)||a.id.localeCompare(b.id));
+  const pct=r=>r.rate===null?'–':Math.round(r.rate*100)+'%';
+  const L=(l,v,c='')=>`<td${c?` class="${c}"`:''} data-label="${l}"><span>${v}</span></td>`;
+  $('#tbl').innerHTML=`<thead><tr><th>Run</th><th>Client</th><th>Course</th><th>Coordinator</th><th>Stage</th><th class="n">Enrolled / min</th><th class="n">Attendance rate ↑</th><th>Next session</th><th class="n">Certs pending</th><th>Trainer</th></tr></thead><tbody>`+
+   (rows.length?rows.map(r=>`<tr class="${r.attn?'hl':''}">`+
+     L('Run','<b>'+esc(r.id)+'</b>'+(EDITS[r.id]?' <span class="chip info">edited</span>':'')+`<br><button type="button" class="btn sm" data-edit="${esc(r.id)}" aria-label="Edit ${esc(r.id)}">Edit</button>`,'nw')+L('Client',esc(r.client))+L('Course',esc(r.course))+L('Coordinator',esc(r.coord))+
+     L('Stage',dot(r.stage)+esc(r.stage),'nw')+
+     L('Enrolled / min',`${r.enrolled} / ${r.min}${r.below?' <span class="chip bad">▲ Below</span>':''}`,'n')+
+     `<td class="n" data-label="Attendance rate" data-tip="${r.rate===null?'Not started':r.attended+' of '+r.enrolled+' attended'}"><span>${pct(r)}</span></td>`+
+     L('Next session',fmt(r.next))+L('Certs pending',r.certsPending?r.certs:'–','n')+
+     L('Trainer',`<span class="tcell"><span>${esc(r.trainer)}</span>${trainerChip(r)}${r.tstate==='ok'?'':`<span class="m">Confirm by ${fmt(r.confirm)} · ${rel(r.cdays)}</span>`}<span class="tbtns">${trainerBtns(r)}</span></span>`)+'</tr>').join(''):'<tr><td class="empty" colspan="10">No runs match.</td></tr>')+'</tbody>';
+}
+
+const tip=$('#tip');
+document.addEventListener('mousemove',e=>{const t=e.target.closest('[data-tip]');if(t){tip.textContent=t.dataset.tip;tip.style.left=e.clientX+12+'px';tip.style.top=e.clientY+12+'px';tip.style.opacity=1}else tip.style.opacity=0});
+
+const modal=$('#modal');let editingId=null,opener=null;
+const FIELDS=['stage','enrolled','attended','certs'];
+function clearErrors(){FIELDS.forEach(f=>{const e=$('#e-'+f);if(e)e.textContent='';$('#g-'+f).classList.remove('bad')})}
+function setErr(f,msg){$('#e-'+f).textContent=msg;$('#g-'+f).classList.add('bad')}
+function syncStage(){
+  const done=$('#f-stage').value==='Completed',base=RUNS.find(r=>r.id===editingId);
+  $('#f-certs').disabled=!done;
+  if(done&&$('#f-certs').value==='')$('#f-certs').value='0';
+  if(!done)$('#f-certs').value='';
+  $('#req').textContent=done?'(required for Completed)':'';
+  const note=$('#m-note');
+  if(done&&base.next){note.hidden=false;note.textContent=`Saving as Completed clears the next session date (${fmt(base.next)}), so this run no longer counts as an upcoming session.`}
+  else note.hidden=true;
+}
+function openEdit(id,btn){
+  const base=RUNS.find(r=>r.id===id),r=eff(base);editingId=id;opener=btn;
+  $('#m-title').textContent='Edit '+id;
+  $('#m-sub').textContent=`${base.course} · ${base.client} · minimum class size ${base.min}`;
+  $('#f-stage').value=r.stage;$('#f-enrolled').value=r.enrolled;$('#f-attended').value=r.attended??'';$('#f-certs').value=r.certs??'';
+  clearErrors();syncStage();modal.hidden=false;$('#f-stage').focus();
+}
+function closeEdit(){modal.hidden=true;editingId=null;if(opener&&document.contains(opener))opener.focus()}
+const toInt=v=>{v=String(v).trim();if(v==='')return null;const n=Number(v);return Number.isInteger(n)&&n>=0?n:NaN};
+$('#f-stage').onchange=()=>{clearErrors();syncStage()};
+$('#m-cancel').onclick=closeEdit;
+modal.addEventListener('mousedown',e=>{if(e.target===modal)closeEdit()});
+document.addEventListener('keydown',e=>{
+  if(modal.hidden)return;
+  if(e.key==='Escape'){closeEdit();return}
+  if(e.key==='Tab'){const f=[...modal.querySelectorAll('select,input,button')].filter(x=>!x.disabled);const a=f[0],z=f[f.length-1];
+    if(e.shiftKey&&document.activeElement===a){e.preventDefault();z.focus()}else if(!e.shiftKey&&document.activeElement===z){e.preventDefault();a.focus()}}
+});
+$('#mform').addEventListener('submit',e=>{
+  e.preventDefault();clearErrors();
+  const base=RUNS.find(r=>r.id===editingId),stage=$('#f-stage').value,done=stage==='Completed';
+  const enrolled=toInt($('#f-enrolled').value),attended=toInt($('#f-attended').value),certs=toInt($('#f-certs').value);
+  let ok=true;
+  if(enrolled===null||Number.isNaN(enrolled)){setErr('enrolled','Enter a whole number, 0 or more.');ok=false}
+  if(Number.isNaN(attended)){setErr('attended','Enter a whole number, 0 or more.');ok=false}
+  else if(done&&attended===null){setErr('attended','Attended must be filled in before a run can be saved as Completed.');ok=false}
+  else if(attended!==null&&enrolled!==null&&!Number.isNaN(enrolled)&&attended>enrolled){setErr('attended','Attended cannot be more than enrolled ('+enrolled+').');ok=false}
+  if(done&&Number.isNaN(certs)){setErr('certs','Enter a whole number, 0 or more.');ok=false}
+  if(!ok){const first=modal.querySelector('.field.bad input,.field.bad select');if(first)first.focus();return}
+  const edit={stage,enrolled,attended,certs:done?(certs??0):null};
+  const same=edit.stage===base.stage&&edit.enrolled===base.enrolled&&edit.attended===(base.attended??null)&&(edit.certs??null)===(base.certs??null);
+  if(same)delete EDITS[editingId];else EDITS[editingId]=edit;
+  persist();closeEdit();render();
+});
+document.addEventListener('click',e=>{const b=e.target.closest('[data-edit]');if(b)openEdit(b.dataset.edit,b)});
+$('#reset').onclick=()=>{EDITS={};TCONF={};persist();persistT();render()};
+
+const cmodal=$('#cmodal');
+function closeCopy(){cmodal.hidden=true}
+$('#c-close').onclick=closeCopy;
+cmodal.addEventListener('mousedown',e=>{if(e.target===cmodal)closeCopy()});
+document.addEventListener('keydown',e=>{if(!cmodal.hidden&&e.key==='Escape')closeCopy()});
+const runById=id=>enrich(eff(RUNS.find(r=>r.id===id)));
+document.addEventListener('click',async e=>{
+  const c=e.target.closest('[data-copy]'),m=e.target.closest('[data-confirm]'),u=e.target.closest('[data-undo]');
+  if(m){TCONF[m.dataset.confirm]=true;persistT();render();return}
+  if(u){delete TCONF[u.dataset.undo];persistT();render();return}
+  if(c){
+    const text=reminderText(runById(c.dataset.copy));
+    try{await navigator.clipboard.writeText(text);const old=c.textContent;c.textContent='Copied ✓';setTimeout(()=>{if(c.isConnected)c.textContent=old},1800)}
+    catch(err){$('#ctext').value=text;cmodal.hidden=false;$('#ctext').focus();$('#ctext').select()}
+  }
+});
+render();
+</script>
+</body>
+</html>
